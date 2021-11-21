@@ -1,0 +1,30 @@
+{
+  "name": "wodchamp",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "Julien Giovaresco <dev@giovaresco.fr>",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "husky install",
+    "lint": "yarn lint:commit && yarn lint:prettier",
+    "lint:commit": "commitlint --from $(git describe --tags --abbrev=0) --to HEAD --verbose",
+    "lint:package": "sort-package-json",
+    "lint:prettier": "prettier --check '**/*.{css,html,js,json,ts}'",
+    "lint:prettier:fix": "prettier --write \"**/*.{css,html,js,json,ts}\"",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{css,html,js,json,ts}": "prettier --write",
+    "package.json": "yarn lint:package"
+  },
+  "dependencies": {
+    "@commitlint/cli": "^15.0.0",
+    "commitlint-config-gitmoji": "^2.2.5",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.2",
+    "prettier": "^2.5.1",
+    "prettier-plugin-packagejson": "^2.2.15",
+    "sort-package-json": "^1.53.1"
+  },
+  "packageManager": "yarn@3.1.0"
+}
