@@ -1,5 +1,6 @@
 package com.wodchamp.domain.championship
 
+import com.wodchamp.domain.Athlete
 import com.wodchamp.domain.Division
 import com.wodchamp.framework.DomainEvent
 import java.time.LocalDate
@@ -10,6 +11,12 @@ sealed class ChampionshipEvent(open val id: String) : DomainEvent {
     val name: String,
     val date: LocalDate,
     val divisions: List<Division>,
+  ) : ChampionshipEvent(id)
+
+  data class AthleteRegistered(
+    override val id: String,
+    val athlete: Athlete,
+    val division: Division
   ) : ChampionshipEvent(id)
 
   override fun getDomainEntityId(): String {

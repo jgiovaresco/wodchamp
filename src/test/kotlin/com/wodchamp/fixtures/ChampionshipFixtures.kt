@@ -1,5 +1,6 @@
 package com.wodchamp.fixtures
 
+import com.wodchamp.domain.Athlete
 import com.wodchamp.domain.Division
 import com.wodchamp.domain.Gender
 import com.wodchamp.domain.Level
@@ -25,4 +26,19 @@ fun aChampionshipCreatedEvent(
     listOf(Division(Gender.Male, Level.RX), Division(Gender.Female, Level.RX))
 ): ChampionshipEvent.ChampionshipCreated {
   return ChampionshipEvent.ChampionshipCreated(id, name, date, divisions)
+}
+
+fun aRegisterAthleteCommand(
+  athlete: Athlete = aMaleAthlete(),
+  division: Division
+): ChampionshipCommand.RegisterAthlete {
+  return ChampionshipCommand.RegisterAthlete(athlete, division)
+}
+
+fun anAthleteRegisteredEvent(
+  id: String = faker.random.nextUUID(),
+  athlete: Athlete = aMaleAthlete(),
+  division: Division = Division(Gender.Male, Level.RX)
+): ChampionshipEvent.AthleteRegistered {
+  return ChampionshipEvent.AthleteRegistered(id, athlete, division)
 }
