@@ -42,3 +42,20 @@ fun anAthleteRegisteredEvent(
 ): ChampionshipEvent.AthleteRegistered {
   return ChampionshipEvent.AthleteRegistered(id, athlete, division)
 }
+
+fun aRegisterEventCommand(
+  name: String = faker.crossfit.heroWorkouts(),
+  description: String = faker.bigBangTheory.quotes()
+
+): ChampionshipCommand.RegisterEvent {
+  return ChampionshipCommand.RegisterEvent(name, description)
+}
+
+fun anEventRegisteredEvent(
+  id: String = faker.random.nextUUID(),
+  eventId: String = faker.random.nextUUID(),
+  name: String = faker.name.femaleFirstName(),
+  description: String = faker.bigBangTheory.quotes()
+): ChampionshipEvent.EventRegistered {
+  return ChampionshipEvent.EventRegistered(id, eventId, name, description)
+}

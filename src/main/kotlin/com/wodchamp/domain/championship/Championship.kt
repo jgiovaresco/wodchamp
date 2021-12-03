@@ -6,6 +6,7 @@ import com.google.common.collect.ListMultimap
 import com.wodchamp.domain.Athlete
 import com.wodchamp.domain.Division
 import com.wodchamp.domain.DivisionAcceptResult
+import com.wodchamp.domain.Event
 import com.wodchamp.domain.error.ErrorCode
 import com.wodchamp.framework.DomainAggregate
 import com.wodchamp.framework.DomainEvent
@@ -17,6 +18,7 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
   var status: ChampionshipStatus = ChampionshipStatus.Initial
   lateinit var info: ChampionshipInfo
   var registeredAthletes: ListMultimap<Division, Athlete> = ArrayListMultimap.create()
+  var registeredEvents: MutableList<Event> = mutableListOf()
 
   fun createChampionship(
     command: ChampionshipCommand.CreateChampionship
@@ -63,11 +65,29 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
     )
   }
 
+  fun registerEvent(command: ChampionshipCommand.RegisterEvent): RegisterEventResult {
+    check(status == ChampionshipStatus.Created) { "Championship must be created" }
+
+    val eventId = IdGenerator.generate()
+
+    return RegisterEventResult.Success(
+      listOf(
+        ChampionshipEvent.EventRegistered(
+          id = id!!,
+          eventId,
+          name = command.name,
+          description = command.description
+        )
+      )
+    )
+  }
+
   override fun applyAll(event: List<ChampionshipEvent>): Championship {
     return event.fold(this) { championship, nextEvent ->
       when (nextEvent) {
         is ChampionshipEvent.ChampionshipCreated -> championship.apply(nextEvent)
         is ChampionshipEvent.AthleteRegistered -> championship.apply(nextEvent)
+        is ChampionshipEvent.EventRegistered -> championship.apply(nextEvent)
       }
     }
   }
@@ -86,9 +106,13 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
   }
 
   private fun apply(event: ChampionshipEvent.AthleteRegistered): Championship {
-
     registeredAthletes.put(event.division, event.athlete)
 
+    return this
+  }
+
+  private fun apply(event: ChampionshipEvent.EventRegistered): Championship {
+    registeredEvents.add(Event(event.eventId, event.name, event.description))
     return this
   }
 }
@@ -108,4 +132,8 @@ sealed class RegisterAthleteResult {
   class Success(val events: List<DomainEvent>) : RegisterAthleteResult()
   object UnavailableDivision : RegisterAthleteResult()
   class IncorrectDivision(val code: ErrorCode) : RegisterAthleteResult()
+}
+
+sealed class RegisterEventResult {
+  class Success(val events: List<DomainEvent>) : RegisterEventResult()
 }

@@ -13,4 +13,6 @@ sealed class ChampionshipCommand : Command {
   ) : ChampionshipCommand()
 
   data class RegisterAthlete(val athlete: Athlete, val division: Division) : ChampionshipCommand()
+
+  data class RegisterEvent(val name: String, val description: String): ChampionshipCommand()
 }

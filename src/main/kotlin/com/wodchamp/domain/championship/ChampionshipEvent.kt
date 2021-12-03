@@ -19,6 +19,13 @@ sealed class ChampionshipEvent(open val id: String) : DomainEvent {
     val division: Division
   ) : ChampionshipEvent(id)
 
+  data class EventRegistered(
+    override val id: String,
+    val eventId: String,
+    val name: String,
+    val description: String
+  ) : ChampionshipEvent(id)
+
   override fun getDomainEntityId(): String {
     return id
   }
