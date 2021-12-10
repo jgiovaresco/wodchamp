@@ -8,7 +8,11 @@ import com.wodchamp.domain.championship.Championship
 import com.wodchamp.domain.championship.ChampionshipEvent
 import com.wodchamp.domain.championship.RegisterAthleteResult
 import com.wodchamp.domain.error.ErrorCode
-import com.wodchamp.fixtures.*
+import com.wodchamp.fixtures.ChampionshipBuilder.Builder.aChampionship
+import com.wodchamp.fixtures.aFemaleAthlete
+import com.wodchamp.fixtures.aMaleAthlete
+import com.wodchamp.fixtures.aRegisterAthleteCommand
+import com.wodchamp.fixtures.anAthleteRegistered
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import strikt.api.expectCatching
@@ -17,21 +21,16 @@ import strikt.assertions.*
 
 class RegisterAthleteTest {
 
-  lateinit var championship: Championship
-  var rxMaleDivision = Division(Gender.Male, Level.RX)
-  var scaledMaleDivision = Division(Gender.Male, Level.SCALED)
-  var rxFemaleDivision = Division(Gender.Female, Level.RX)
-  var scaledFemaleDivision = Division(Gender.Female, Level.SCALED)
+  private lateinit var championship: Championship
+  private var rxMaleDivision = Division(Gender.Male, Level.RX)
+  private var scaledMaleDivision = Division(Gender.Male, Level.SCALED)
+  private var rxFemaleDivision = Division(Gender.Female, Level.RX)
+  private var scaledFemaleDivision = Division(Gender.Female, Level.SCALED)
 
   @BeforeEach
   internal fun setUp() {
     championship =
-      Championship()
-        .applyAll(
-          aChampionshipCreatedEvent(
-            divisions = listOf(rxFemaleDivision, rxMaleDivision, scaledMaleDivision)
-          )
-        )
+      aChampionship(divisions = listOf(rxFemaleDivision, rxMaleDivision, scaledMaleDivision)).get()
   }
 
   @Test

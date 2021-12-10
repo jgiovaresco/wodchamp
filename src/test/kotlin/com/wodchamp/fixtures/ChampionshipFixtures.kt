@@ -46,7 +46,6 @@ fun anAthleteRegisteredEvent(
 fun aRegisterEventCommand(
   name: String = faker.crossfit.heroWorkouts(),
   description: String = faker.bigBangTheory.quotes()
-
 ): ChampionshipCommand.RegisterEvent {
   return ChampionshipCommand.RegisterEvent(name, description)
 }

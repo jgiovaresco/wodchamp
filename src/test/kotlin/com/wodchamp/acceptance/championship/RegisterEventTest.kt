@@ -1,13 +1,10 @@
 package com.wodchamp.acceptance.championship
 
-import com.wodchamp.domain.Division
 import com.wodchamp.domain.Event
-import com.wodchamp.domain.Gender
-import com.wodchamp.domain.Level
 import com.wodchamp.domain.championship.Championship
 import com.wodchamp.domain.championship.ChampionshipEvent
 import com.wodchamp.domain.championship.RegisterEventResult
-import com.wodchamp.fixtures.aChampionshipCreatedEvent
+import com.wodchamp.fixtures.ChampionshipBuilder.Builder.aChampionship
 import com.wodchamp.fixtures.aRegisterEventCommand
 import com.wodchamp.fixtures.anEventRegisteredEvent
 import org.junit.jupiter.api.BeforeEach
@@ -17,17 +14,11 @@ import strikt.api.expectThat
 import strikt.assertions.*
 
 class RegisterEventTest {
-  lateinit var championship: Championship
+  private lateinit var championship: Championship
 
   @BeforeEach
   internal fun setUp() {
-    championship =
-      Championship()
-        .applyAll(
-          aChampionshipCreatedEvent(
-            divisions = listOf(Division(Gender.Male, Level.RX), Division(Gender.Female, Level.RX))
-          )
-        )
+    championship = aChampionship().get()
   }
 
   @Test
@@ -73,8 +64,8 @@ class RegisterEventTest {
 
   @Test
   fun `should register a second event`() {
-    val event1 = anEventRegisteredEvent(id = championship.id!!);
-    val event2 = anEventRegisteredEvent(id = championship.id!!);
+    val event1 = anEventRegisteredEvent(id = championship.id!!)
+    val event2 = anEventRegisteredEvent(id = championship.id!!)
     val events = listOf(event1, event2)
 
     val championship = championship.applyAll(events)
