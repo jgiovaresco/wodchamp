@@ -58,3 +58,9 @@ fun anEventRegisteredEvent(
 ): ChampionshipEvent.EventRegistered {
   return ChampionshipEvent.EventRegistered(id, eventId, name, description)
 }
+
+fun aChampionshipStartedEvent(
+  id: String = faker.random.nextUUID()
+): ChampionshipEvent.ChampionshipStarted {
+  return ChampionshipEvent.ChampionshipStarted(id)
+}

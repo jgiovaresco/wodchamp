@@ -19,6 +19,7 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
   lateinit var info: ChampionshipInfo
   var registeredAthletes: ListMultimap<Division, Athlete> = ArrayListMultimap.create()
   var registeredEvents: MutableList<Event> = mutableListOf()
+  lateinit var currentEvent: Event
 
   fun createChampionship(
     command: ChampionshipCommand.CreateChampionship
@@ -82,12 +83,27 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
     )
   }
 
+  fun start(): StartResult {
+    check(status == ChampionshipStatus.Created) { "Championship must be created" }
+    check(registeredEvents.size > 0) { "At least one event must be registered" }
+
+    val allDivisionsHaveEnoughAthlete =
+      info.divisions.all { (registeredAthletes.asMap().getOrDefault(it, emptyList()).size >= 2) }
+
+    if (allDivisionsHaveEnoughAthlete) {
+      return StartResult.Success(events = listOf(ChampionshipEvent.ChampionshipStarted(id!!)))
+    }
+
+    return StartResult.NotEnoughAthlete
+  }
+
   override fun applyAll(event: List<ChampionshipEvent>): Championship {
     return event.fold(this) { championship, nextEvent ->
       when (nextEvent) {
         is ChampionshipEvent.ChampionshipCreated -> championship.apply(nextEvent)
         is ChampionshipEvent.AthleteRegistered -> championship.apply(nextEvent)
         is ChampionshipEvent.EventRegistered -> championship.apply(nextEvent)
+        is ChampionshipEvent.ChampionshipStarted -> championship.apply(nextEvent)
       }
     }
   }
@@ -115,11 +131,18 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
     registeredEvents.add(Event(event.eventId, event.name, event.description))
     return this
   }
+
+  private fun apply(event: ChampionshipEvent.ChampionshipStarted): Championship {
+    status = ChampionshipStatus.Started
+    currentEvent = registeredEvents.first()
+    return this
+  }
 }
 
 enum class ChampionshipStatus {
   Initial,
-  Created
+  Created,
+  Started
 }
 
 data class ChampionshipInfo(val name: String, val date: LocalDate, val divisions: List<Division>)
@@ -136,4 +159,9 @@ sealed class RegisterAthleteResult {
 
 sealed class RegisterEventResult {
   class Success(val events: List<DomainEvent>) : RegisterEventResult()
+}
+
+sealed class StartResult {
+  class Success(val events: List<DomainEvent>) : StartResult()
+  object NotEnoughAthlete : StartResult()
 }

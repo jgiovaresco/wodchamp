@@ -12,7 +12,7 @@ import com.wodchamp.fixtures.ChampionshipBuilder.Builder.aChampionship
 import com.wodchamp.fixtures.aFemaleAthlete
 import com.wodchamp.fixtures.aMaleAthlete
 import com.wodchamp.fixtures.aRegisterAthleteCommand
-import com.wodchamp.fixtures.anAthleteRegistered
+import com.wodchamp.fixtures.anAthleteRegisteredEvent
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import strikt.api.expectCatching

@@ -37,6 +37,7 @@ dependencies {
   testImplementation("io.quarkus:quarkus-junit5:$quarkusPlatformVersion")
   testImplementation(platform("org.junit:junit-bom:$junitVersion"))
   testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+  testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
   testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
   testImplementation("io.github.serpro69:kotlin-faker:$fakerVersion")
   testImplementation("io.strikt:strikt-core:$striktVersion")
