@@ -6,11 +6,11 @@ import com.wodchamp.domain.Gender
 fun aMaleAthlete(
   name: String = faker.crossfit.maleAthletes(),
 ): Athlete {
-  return Athlete(name, Gender.Male)
+  return Athlete(faker.random.nextUUID(), name, Gender.Male)
 }
 
 fun aFemaleAthlete(
   name: String = faker.crossfit.femaleAthletes(),
 ): Athlete {
-  return Athlete(name, Gender.Female)
+  return Athlete(faker.random.nextUUID(), name, Gender.Female)
 }

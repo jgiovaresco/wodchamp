@@ -3,10 +3,7 @@ package com.wodchamp.domain.championship
 import com.google.common.base.Strings.isNullOrEmpty
 import com.google.common.collect.ArrayListMultimap
 import com.google.common.collect.ListMultimap
-import com.wodchamp.domain.Athlete
-import com.wodchamp.domain.Division
-import com.wodchamp.domain.DivisionAcceptResult
-import com.wodchamp.domain.Event
+import com.wodchamp.domain.*
 import com.wodchamp.domain.error.ErrorCode
 import com.wodchamp.framework.DomainAggregate
 import com.wodchamp.framework.DomainEvent
@@ -77,7 +74,8 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
           id = id!!,
           eventId,
           name = command.name,
-          description = command.description
+          description = command.description,
+          scoreType = command.scoreType
         )
       )
     )
@@ -97,6 +95,27 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
     return StartResult.NotEnoughAthlete
   }
 
+  fun registerScore(command: ChampionshipCommand.RegisterScore): RegisterScoreResult {
+    check(status == ChampionshipStatus.Started) { "Championship must be started" }
+
+    val athleteExists =
+      registeredAthletes.asMap().entries.any {
+        it.value.any { athlete -> athlete.id == command.athleteId }
+      }
+    if (!athleteExists) {
+      return RegisterScoreResult.UnknownAthlete(command.athleteId)
+    }
+
+    if (currentEvent.scoreType != command.score.type) {
+      return RegisterScoreResult.IncompatibleScore(command.score)
+    }
+
+    return RegisterScoreResult.Success(
+      events =
+        listOf(ChampionshipEvent.EventScoreRegistered(id!!, command.athleteId, command.score))
+    )
+  }
+
   override fun applyAll(event: List<ChampionshipEvent>): Championship {
     return event.fold(this) { championship, nextEvent ->
       when (nextEvent) {
@@ -104,6 +123,7 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
         is ChampionshipEvent.AthleteRegistered -> championship.apply(nextEvent)
         is ChampionshipEvent.EventRegistered -> championship.apply(nextEvent)
         is ChampionshipEvent.ChampionshipStarted -> championship.apply(nextEvent)
+        is ChampionshipEvent.EventScoreRegistered -> championship.apply(nextEvent)
       }
     }
   }
@@ -128,13 +148,17 @@ open class Championship : DomainAggregate<String, ChampionshipEvent>() {
   }
 
   private fun apply(event: ChampionshipEvent.EventRegistered): Championship {
-    registeredEvents.add(Event(event.eventId, event.name, event.description))
+    registeredEvents.add(Event(event.eventId, event.name, event.description, event.scoreType))
     return this
   }
 
   private fun apply(event: ChampionshipEvent.ChampionshipStarted): Championship {
     status = ChampionshipStatus.Started
     currentEvent = registeredEvents.first()
+    return this
+  }
+
+  private fun apply(event: ChampionshipEvent.EventScoreRegistered): Championship {
     return this
   }
 }
@@ -164,4 +188,11 @@ sealed class RegisterEventResult {
 sealed class StartResult {
   class Success(val events: List<DomainEvent>) : StartResult()
   object NotEnoughAthlete : StartResult()
+}
+
+sealed class RegisterScoreResult {
+  class Success(val events: List<DomainEvent>) : RegisterScoreResult()
+
+  class UnknownAthlete(val athleteId: String) : RegisterScoreResult()
+  class IncompatibleScore(val score: Score) : RegisterScoreResult()
 }

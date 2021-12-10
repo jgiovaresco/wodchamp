@@ -2,6 +2,8 @@ package com.wodchamp.domain.championship
 
 import com.wodchamp.domain.Athlete
 import com.wodchamp.domain.Division
+import com.wodchamp.domain.Score
+import com.wodchamp.domain.ScoreType
 import com.wodchamp.framework.Command
 import java.time.LocalDate
 
@@ -14,5 +16,8 @@ sealed class ChampionshipCommand : Command {
 
   data class RegisterAthlete(val athlete: Athlete, val division: Division) : ChampionshipCommand()
 
-  data class RegisterEvent(val name: String, val description: String): ChampionshipCommand()
+  data class RegisterEvent(val name: String, val description: String, val scoreType: ScoreType) :
+    ChampionshipCommand()
+
+  data class RegisterScore(val athleteId: String, val score: Score) : ChampionshipCommand()
 }

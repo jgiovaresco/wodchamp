@@ -20,6 +20,10 @@ class ChampionshipBuilder(divisions: List<Division>) {
     }
   }
 
+  fun withAthletes(vararg athletes: ChampionshipEvent.AthleteRegistered): ChampionshipBuilder {
+    return withAthletes(athletes.toList())
+  }
+
   fun withAthletes(
     athletes: List<ChampionshipEvent.AthleteRegistered> =
       listOf(
@@ -33,6 +37,10 @@ class ChampionshipBuilder(divisions: List<Division>) {
     return this
   }
 
+  fun withEvents(vararg athletes: ChampionshipEvent.EventRegistered): ChampionshipBuilder {
+    return withEvents(athletes.toList())
+  }
+
   fun withEvents(
     events: List<ChampionshipEvent.EventRegistered> =
       listOf(
@@ -42,6 +50,11 @@ class ChampionshipBuilder(divisions: List<Division>) {
       )
   ): ChampionshipBuilder {
     championship = championship.applyAll(events)
+    return this
+  }
+
+  fun started(): ChampionshipBuilder {
+    championship = championship.applyAll(aChampionshipStartedEvent())
     return this
   }
 

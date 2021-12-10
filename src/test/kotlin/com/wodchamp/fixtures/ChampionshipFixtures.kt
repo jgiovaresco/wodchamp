@@ -1,9 +1,6 @@
 package com.wodchamp.fixtures
 
-import com.wodchamp.domain.Athlete
-import com.wodchamp.domain.Division
-import com.wodchamp.domain.Gender
-import com.wodchamp.domain.Level
+import com.wodchamp.domain.*
 import com.wodchamp.domain.championship.ChampionshipCommand
 import com.wodchamp.domain.championship.ChampionshipEvent
 import com.wodchamp.utils.TimeProvider
@@ -45,22 +42,31 @@ fun anAthleteRegisteredEvent(
 
 fun aRegisterEventCommand(
   name: String = faker.crossfit.heroWorkouts(),
-  description: String = faker.bigBangTheory.quotes()
+  description: String = faker.bigBangTheory.quotes(),
+  scoreType: ScoreType = faker.random.nextEnum(),
 ): ChampionshipCommand.RegisterEvent {
-  return ChampionshipCommand.RegisterEvent(name, description)
+  return ChampionshipCommand.RegisterEvent(name, description, scoreType)
 }
 
 fun anEventRegisteredEvent(
   id: String = faker.random.nextUUID(),
   eventId: String = faker.random.nextUUID(),
   name: String = faker.name.femaleFirstName(),
-  description: String = faker.bigBangTheory.quotes()
+  description: String = faker.bigBangTheory.quotes(),
+  scoreType: ScoreType = faker.random.nextEnum(),
 ): ChampionshipEvent.EventRegistered {
-  return ChampionshipEvent.EventRegistered(id, eventId, name, description)
+  return ChampionshipEvent.EventRegistered(id, eventId, name, description, scoreType)
 }
 
 fun aChampionshipStartedEvent(
   id: String = faker.random.nextUUID()
 ): ChampionshipEvent.ChampionshipStarted {
   return ChampionshipEvent.ChampionshipStarted(id)
+}
+
+fun aRegisterScoreCommand(
+  athleteId: String = faker.random.nextUUID(),
+  score: Score = aWeightScore(),
+): ChampionshipCommand.RegisterScore {
+  return ChampionshipCommand.RegisterScore(athleteId, score)
 }
